@@ -1,21 +1,21 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE_BACKEND = "username/backend-app"
-        DOCKER_IMAGE_FRONTEND = "username/frontend-app"
+        DOCKER_IMAGE_BACKEND = "hajmabroukwafa/backend-app"
+        DOCKER_IMAGE_FRONTEND = "hajmabroukwafa/frontend-app"
         DOCKER_REGISTRY = "docker.io"
     }
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/wafaHajMabrouk/developpement.git'
+                git url: 'https://github.com/wafaHajMabrouk/DevOps.git', branch: 'main'
             }
         }
         stage('Install Backend Dependencies') {
             steps {
                 script {
                     dir('backend') {
-                        sh 'npm install'
+                        bat 'npm install'
                     }
                 }
             }
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                     dir('frontend') {
-                        sh 'npm install'
+                        bat 'npm install'
                     }
                 }
             }
@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     dir('backend') {
-                        sh 'npm test' // Exécuter les tests backend avec Mocha
+                        bat 'npm test' // Exécuter les tests backend avec Mocha
                     }
                 }
             }
@@ -42,7 +42,7 @@ pipeline {
             steps {
                 script {
                     dir('frontend') {
-                        sh 'npm run test' // Exécuter les tests frontend si nécessaire (par exemple, avec Jest)
+                        bat 'npm run test' // Exécuter les tests frontend si nécessaire (par exemple, avec Jest)
                     }
                 }
             }
@@ -52,11 +52,11 @@ pipeline {
                 script {
                     // Build the backend image
                     dir('backend') {
-                        sh 'docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest .'
+                        bat 'docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest .'
                     }
                     // Build the frontend image
                     dir('frontend') {
-                        sh 'docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest .'
+                        bat 'docker build -t ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest .'
                     }
                 }
             }
@@ -65,9 +65,9 @@ pipeline {
             steps {
                 script {
                     // Push the backend image to DockerHub
-                    sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest'
+                    bat 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest'
                     // Push the frontend image to DockerHub
-                    sh 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest'
+                    bat 'docker push ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest'
                 }
             }
         }
@@ -75,7 +75,7 @@ pipeline {
             steps {
                 sshagent(['id-ssh']) {
                     script {
-                        sh 'ssh user@server "docker pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest && docker pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest && docker-compose up -d"'
+                        bat 'ssh user@server "docker pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_BACKEND}:latest && docker pull ${DOCKER_REGISTRY}/${DOCKER_IMAGE_FRONTEND}:latest && docker-compose up -d"'
                     }
                 }
             }

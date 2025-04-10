@@ -5,11 +5,11 @@ FROM node:16-alpine
 WORKDIR /app
 
 # Copier les fichiers de package et installer les dépendances
-COPY backend/package*.json ./
+COPY package*.json ./
 RUN npm install
 
 # Copier le reste des fichiers
-COPY backend/ .
+COPY . .
 
 # Exposer le port de l'application
 EXPOSE 5000
